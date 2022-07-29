@@ -7,7 +7,26 @@
 nodejs
 
 ## 실행방법
-node fan_controller.js
+```
+$ node fan_controller.js
+```
+
+## 실행결과
+```
+{"level":"info","message":{"contents":[["cpu temperture",55.991,1]],"timestamp":"2022-07-29 16:52:05"}}
+{"level":"info","message":{"contents":[["cpu temperture",55.017,1]],"timestamp":"2022-07-29 16:52:15"}}
+{"level":"info","message":{"contents":[["cpu temperture",55.504,1]],"timestamp":"2022-07-29 16:52:25"}}
+{"level":"info","message":{"contents":[["cpu temperture",53.556,0]],"timestamp":"2022-07-29 16:52:35"}}
+{"level":"info","message":{"contents":[["cpu temperture",55.504,1]],"timestamp":"2022-07-29 16:52:45"}}
+{"level":"info","message":{"contents":[["cpu temperture",55.017,1]],"timestamp":"2022-07-29 16:52:55"}}
+{"level":"info","message":{"contents":[["cpu temperture",54.53,0]],"timestamp":"2022-07-29 16:53:05"}}
+{"level":"info","message":{"contents":[["cpu temperture",54.043,0]],"timestamp":"2022-07-29 16:53:15"}}
+{"level":"info","message":{"contents":[["cpu temperture",55.017,1]],"timestamp":"2022-07-29 16:53:25"}}
+{"level":"info","message":{"contents":[["cpu temperture",55.017,1]],"timestamp":"2022-07-29 16:53:35"}}
+{"level":"info","message":{"contents":[["cpu temperture",54.043,0]],"timestamp":"2022-07-29 16:53:45"}}
+{"level":"info","message":{"contents":[["cpu temperture",53.069,0]],"timestamp":"2022-07-29 16:53:55"}}
+{"level":"info","message":{"contents":[["cpu temperture",54.043,0]],"timestamp":"2022-07-29 16:54:05"}}
+```
 
 ## 의존성
 GPIO 제어와 로깅, 쉘명령 실행에 필요한 의존성 모듈입니다.
