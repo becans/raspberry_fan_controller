@@ -2,15 +2,28 @@ const GPIO = require('onoff').Gpio,
 	fan = new GPIO(26, 'low'),
 	winston = require('winston'),
 	date = require('date-utils'),
-	cproc = require('child_process');
+	cproc = require('child_process'),
+	fs = require('fs');
+
+require('winston-daily-rotate-file');
+
+const transport = new winston.transports.DailyRotateFile({
+    filename: 'logs/fan_controller.%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: false,
+    maxSize: '20m',
+    maxFiles: '14d'
+  });
 
 const logger = winston.createLogger({
     transports:[
-        new (winston.transports.Console)({
-        timestamp:function(){return new Date().toFormat('YYYY-MM-DD HH24:MI:SS')}
-        })
+		transport
+		//new winston.transports.File({ filename: 'error.log', level: 'error' }),
+		//new winston.transports.File({ filename: 'fan_controller.log' }),
     ]
 });
+
+const config_file = __dirname + '/config'
 
 function logger_format(level, ...contents){
 	const form_log = { timestamp: new Date().toFormat('YYYY-MM-DD HH24:MI:SS'), contents}
@@ -45,17 +58,31 @@ function exe_shell(command) {
 	});
 }
 
+function read_config(event) {
+	i('read config file!!');
+	var JSON_config = fs.readFileSync(config_file, 'utf8');
+
+	var config = JSON.parse(JSON_config);
+
+	running_sec = parseInt(config.running_sec);
+	interval_sec = parseInt(config.interval_sec);
+
+	i('running_sec', running_sec);
+	i('interval_sec', interval_sec);
+}
+
 async function get_temp() {
-	setTimeout(get_temp, 10000);
 
 	try {
 		const temp = await exe_shell("cat /sys/class/thermal/thermal_zone0/temp");
 
 		if(temp/1000 > 55){
 			fan.writeSync(1);
+			setTimeout(get_temp, 1000*running_sec);
 		}
 		else{
 			fan.writeSync(0);
+			setTimeout(get_temp, 1000*interval_sec);
 		}
 		i("cpu temperture", temp/1000, fan.readSync());
 
@@ -65,4 +92,6 @@ async function get_temp() {
 
 }
 
+fs.watchFile(config_file, read_config);
+read_config('change');
 get_temp();
