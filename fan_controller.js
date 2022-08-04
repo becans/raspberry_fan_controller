@@ -23,7 +23,7 @@ const logger = winston.createLogger({
     ]
 });
 
-const config_file = __dirname + '/config'
+const config_file = __dirname + '/conf/fan-config'
 
 function logger_format(level, ...contents){
 	const form_log = { timestamp: new Date().toFormat('YYYY-MM-DD HH24:MI:SS'), contents}
@@ -58,15 +58,21 @@ function exe_shell(command) {
 	});
 }
 
+var cri_temp_cels = 0;
+var running_sec = 0;
+var interval_sec = 0;
+
 function read_config(event) {
 	i('read config file!!');
 	var JSON_config = fs.readFileSync(config_file, 'utf8');
 
 	var config = JSON.parse(JSON_config);
 
+	cri_temp_cels = parseInt(config.cri_temp_cels);
 	running_sec = parseInt(config.running_sec);
 	interval_sec = parseInt(config.interval_sec);
 
+	i('cri_temp_cels', cri_temp_cels);
 	i('running_sec', running_sec);
 	i('interval_sec', interval_sec);
 }
@@ -76,7 +82,7 @@ async function get_temp() {
 	try {
 		const temp = await exe_shell("cat /sys/class/thermal/thermal_zone0/temp");
 
-		if(temp/1000 > 55){
+		if(temp/1000 > cri_temp_cels){
 			fan.writeSync(1);
 			setTimeout(get_temp, 1000*running_sec);
 		}
