@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  creationTimestamp: null
+  labels:
+    app: fan-controller
+  name: fan-controller
+spec:
+  selector:
+    matchLabels:
+      app: fan-controller
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: fan-controller
+    spec:
+      containers:
+      - name: fan-controller
+        image: becans/fan-controller:arm7.0.7
+        env:
+        - name: TZ
+          value: Asia/Seoul
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: gpiopath
+            mountPath: /sys
+          - name: fanconfig
+            mountPath: /usr/src/app/conf
+      volumes:
+      - name: gpiopath
+        hostPath:
+          path: /sys
+          type: Directory
+      - name: fanconfig
+        configMap:
+          name: fan-config

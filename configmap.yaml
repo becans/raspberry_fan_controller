@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  fan.config: |
+    {
+    "cri_temp_cels":"55",
+    "running_sec":"300",
+    "interval_sec":"30"
+    }
+kind: ConfigMap
+metadata:
+  name: fan-config
+  namespace: default

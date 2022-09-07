@@ -17,13 +17,12 @@ const transport = new winston.transports.DailyRotateFile({
 
 const logger = winston.createLogger({
     transports:[
-		transport
-		//new winston.transports.File({ filename: 'error.log', level: 'error' }),
-		//new winston.transports.File({ filename: 'fan_controller.log' }),
+		//transport
+		new (winston.transports.Console)()
     ]
 });
 
-const config_file = __dirname + '/conf/fan-config'
+const config_file = __dirname + '/conf/fan.config'
 
 function logger_format(level, ...contents){
 	const form_log = { timestamp: new Date().toFormat('YYYY-MM-DD HH24:MI:SS'), contents}
@@ -79,21 +78,23 @@ function read_config(event) {
 
 async function get_temp() {
 
+	var interval = interval_sec;
 	try {
 		const temp = await exe_shell("cat /sys/class/thermal/thermal_zone0/temp");
 
 		if(temp/1000 > cri_temp_cels){
 			fan.writeSync(1);
-			setTimeout(get_temp, 1000*running_sec);
+			interval = running_sec;
 		}
 		else{
 			fan.writeSync(0);
-			setTimeout(get_temp, 1000*interval_sec);
 		}
 		i("cpu temperture", temp/1000, fan.readSync());
 
 	}catch(error) {
 		e(error.toString());
+	}finally {
+		setTimeout(get_temp, 1000*interval);
 	}
 
 }
